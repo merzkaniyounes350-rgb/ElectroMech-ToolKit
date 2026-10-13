@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlTag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor Run Capacitor Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #1e1e2f; color: #fff; padding: 20px; text-align: center; }
+        .card { background-color: #2d2d44; padding: 20px; border-radius: 12px; max-width: 400px; margin: auto; }
+        .lang-picker { text-align: left; margin-bottom: 15px; }
+        select, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #1e1e2f; color: #fff; font-size: 16px; box-sizing: border-box; margin-bottom: 10px; }
+        select { color: #00d2ff; border-color: #00d2ff; font-weight: bold; }
+        h2 { color: #00d2ff; margin-bottom: 10px; font-size: 20px; }
+        .input-group { text-align: initial; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; color: #aaa; }
+        button { width: 100%; padding: 12px; background: #00d2ff; border: none; border-radius: 6px; color: #000; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .result { margin-top: 20px; padding: 12px; background: #1e1e2f; border-radius: 6px; border-inline-start: 4px solid #00d2ff; text-align: initial; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="lang-picker">
+        <select id="langSelect" onchange="changeLanguage(this.value)">
+            <option value="en" selected>English 🇬🇧</option>
+            <option value="ar">العربية 🇩🇿</option>
+            <option value="fr">Français 🇫🇷</option>
+        </select>
+    </div>
+
+    <h2 id="title">🔋 Motor Run Capacitor Calculator</h2>
+
+    <div class="input-group">
+        <label id="lbl_power">Motor Power (Watts W):</label>
+        <input type="number" id="motorPower" placeholder="e.g. 750">
+    </div>
+
+    <div class="input-group">
+        <label id="lbl_volt">Mains Voltage (Volt):</label>
+        <select id="voltage">
+            <option value="220">220V - 240V (Standard Grid)</option>
+            <option value="110">110V - 120V (US Grid)</option>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label id="lbl_freq">Frequency (Hz):</label>
+        <select id="frequency">
+            <option value="50">50 Hz</option>
+            <option value="60">60 Hz</option>
+        </select>
+    </div>
+
+    <button onclick="calculateCapacitor()" id="btn_calc">Calculate Capacitor</button>
+
+    <div class="result" id="output">Result will appear here...</div>
+</div>
+
+<script>
+//@ts-nocheck
+const translations = {
+    ar: {
+        dir: "rtl",
+        title: "🔋 حاسبة مكثف المحركات والضواغط",
+        lblPower: "قدرة المحرك (Watt واط):",
+        lblVolt: "جهد الشبكة (Volt):",
+        lblFreq: "التردد (Hz):",
+        btn: "حساب سعة المكثف",
+        placeholder: "النتيجة ستظهر هنا...",
+        resHeader: "سعة المكثف المطلوبة:",
+        err: "يرجى إدخال قدرة المحرك بشكل صحيح."
+    },
+    en: {
+        dir: "ltr",
+        title: "🔋 Motor Run Capacitor Calculator",
+        lblPower: "Motor Power (Watts W):",
+        lblVolt: "Mains Voltage (Volt):",
+        lblFreq: "Frequency (Hz):",
+        btn: "Calculate Capacitor",
+        placeholder: "Result will appear here...",
+        resHeader: "Required Capacitor Value:",
+        err: "Please enter a valid motor power."
+    },
+    fr: {
+        dir: "ltr",
+        title: "🔋 Calculateur Condensateur Moteur",
+        lblPower: "Puissance du Moteur (Watts W):",
+        lblVolt: "Tension du Réseau (Volt):",
+        lblFreq: "Fréquence (Hz):",
+        btn: "Calculer le Condensateur",
+        placeholder: "Le résultat apparaîtra ici...",
+        resHeader: "Valeur du Condensateur Requise:",
+        err: "Veuillez entrer une puissance valide."
+    }
+};
+
+let currentLang = 'en';
+
+function changeLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+    document.getElementById('htmlTag').dir = t.dir;
+    document.getElementById('title').innerText = t.title;
+    document.getElementById('lbl_power').innerText = t.lblPower;
+    document.getElementById('lbl_volt').innerText = t.lblVolt;
+    document.getElementById('lbl_freq').innerText = t.lblFreq;
+    document.getElementById('btn_calc').innerText = t.btn;
+    document.getElementById('output').innerText = t.placeholder;
+}
+
+function calculateCapacitor() {
+    let power = parseFloat(document.getElementById('motorPower').value);
+    let voltage = parseFloat(document.getElementById('voltage').value);
+    let freq = parseFloat(document.getElementById('frequency').value);
+    const t = translations[currentLang];
+
+    if (isNaN(power) || power <= 0) {
+        document.getElementById('output').innerHTML = `<span style="color: #ff4d4d;">${t.err}</span>`;
+        return;
+    }
+
+    // المعادلة القياسية لحساب مكثف التشغيل: C = (P * 10^6) / (2 * pi * f * V^2)
+    let capacitorValue = (power * 1000000) / (2 * Math.PI * freq * Math.pow(voltage, 2));
+
+    document.getElementById('output').innerHTML = `<strong>${t.resHeader}</strong><br><span style="font-size: 20px; color: #00d2ff;">${capacitorValue.toFixed(1)} µF (ميكروفاراد)</span>`;
+}
+
+changeLanguage('en');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlTag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroMech ToolKit</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e2f;
+            color: #ffffff;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 450px;
+            margin: auto;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .header h1 {
+            color: #00d2ff;
+            margin: 0;
+            font-size: 24px;
+        }
+        .header p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+        .lang-picker {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        select {
+            background-color: #2d2d44;
+            color: #00d2ff;
+            border: 1px solid #00d2ff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        .card {
+            background-color: #2d2d44;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            color: #fff;
+            border-inline-start: 5px solid #00d2ff;
+            transition: transform 0.2s;
+        }
+        .card:active {
+            transform: scale(0.98);
+        }
+        .card-icon {
+            font-size: 32px;
+            margin-inline-end: 15px;
+        }
+        .card-text {
+            flex-grow: 1;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #00d2ff;
+        }
+        .card-desc {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 4px;
+        }
+        .arrow {
+            font-size: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="lang-picker">
+        <select id="langSelect" onchange="changeLanguage(this.value)">
+            <option value="en" selected>English 🇬🇧</option>
+            <option value="ar">العربية 🇩🇿</option>
+            <option value="fr">Français 🇫🇷</option>
+        </select>
+    </div>
+
+    <div class="header">
+        <h1>ElectroMech ToolKit</h1>
+        <p id="sub_header">Technical & Maintenance Toolkit</p>
+    </div>
+
+    <div class="grid">
+        <a href="index.html" class="card">
+            <span class="card-icon">⚡</span>
+            <div class="card-text">
+                <div class="card-title" id="title_ohm">Ohm's Law & Power Calculator</div>
+                <div class="card-desc" id="desc_ohm">Calculate Voltage, Current, Resistance & Wattage.</div>
+            </div>
+            <span class="arrow">❯</span>
+        </a>
+
+        <a href="resistor.html" class="card">
+            <span class="card-icon">🎨</span>
+            <div class="card-text">
+                <div class="card-title" id="title_res">Resistor Color Code Calculator</div>
+                <div class="card-desc" id="desc_res">Determine resistor values & tolerance by colors.</div>
+            </div>
+            <span class="arrow">❯</span>
+        </a>
+
+        <a href="capacitor.html" class="card">
+            <span class="card-icon">🔋</span>
+            <div class="card-text">
+                <div class="card-title" id="title_cap">Motor Capacitor Calculator</div>
+                <div class="card-desc" id="desc_cap">Calculate run capacitor value in microfarads (µF).</div>
+            </div>
+            <span class="arrow">❯</span>
+        </a>
+    </div>
+</div>
+
+<script>
+const translations = {
+    ar: {
+        dir: "rtl",
+        sub: "حقيبة أدوات الصيانة والحسابات التقنية",
+        t_ohm: "حاسبة قانون أوم والقدرة",
+        d_ohm: "حساب الجهد، التيار، المقاومة، والوات بسهولة.",
+        t_res: "حاسبة ألوان المقاومات",
+        d_res: "تحديد قيمة المقاومة والتفاوت عبر الألوان (4 أشرطة).",
+        t_cap: "حاسبة مكثفات المحركات",
+        d_cap: "حساب سعة مكثف التشغيل بالميكروفاراد (µF)."
+    },
+    en: {
+        dir: "ltr",
+        sub: "Technical & Maintenance Toolkit",
+        t_ohm: "Ohm's Law & Power Calculator",
+        d_ohm: "Calculate Voltage, Current, Resistance & Wattage.",
+        t_res: "Resistor Color Code Calculator",
+        d_res: "Determine resistor values & tolerance by colors.",
+        t_cap: "Motor Capacitor Calculator",
+        d_cap: "Calculate run capacitor value in microfarads (µF)."
+    },
+    fr: {
+        dir: "ltr",
+        sub: "Boîte à Outils de Maintenance & Calculs",
+        t_ohm: "Calculateur Loi d'Ohm & Puissance",
+        d_ohm: "Calculez Tension, Courant, Résistance et Puissance.",
+        t_res: "Code Couleur des Résistances",
+        d_res: "Déterminez la valeur des résistances par couleur.",
+        t_cap: "Calculateur Condensateur Moteur",
+        d_cap: "Calculez la valeur du condensateur en microfarads (µF)."
+    }
+};
+
+function changeLanguage(lang) {
+    const t = translations[lang];
+    document.getElementById('htmlTag').dir = t.dir;
+    document.getElementById('sub_header').innerText = t.sub;
+    document.getElementById('title_ohm').innerText = t.t_ohm;
+    document.getElementById('desc_ohm').innerText = t.d_ohm;
+    document.getElementById('title_res').innerText = t.t_res;
+    document.getElementById('desc_res').innerText = t.d_res;
+    document.getElementById('title_cap').innerText = t.t_cap;
+    document.getElementById('desc_cap').innerText = t.d_cap;
+}
+
+changeLanguage('en');
+  function changeLanguage(lang) {
+    const t = translations[lang];
+    document.getElementById('htmlTag').dir = t.dir;
+    document.getElementById('sub_header').innerText = t.sub;
+    
+    // الحاسبة الأولى: أوم
+    document.getElementById('title_ohm').innerText = t.t_ohm;
+    document.getElementById('desc_ohm').innerText = t.d_ohm;
+    
+    // الحاسبة الثانية: المقاومات
+    document.getElementById('title_res').innerText = t.t_res;
+    document.getElementById('desc_res').innerText = t.d_res;
+    
+    // الحاسبة الثالثة: المكثفات (إضافة السطرين المطلوبين)
+    document.getElementById('title_cap').innerText = t.t_cap;
+    document.getElementById('desc_cap').innerText = t.d_cap;
+}
+
+</script>
+
+</body>
+</html>

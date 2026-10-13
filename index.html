@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlTag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ohm's Law Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #1e1e2f; color: #fff; padding: 20px; text-align: center; }
+        .card { background-color: #2d2d44; padding: 20px; border-radius: 12px; max-width: 400px; margin: auto; }
+        .lang-picker { text-align: left; margin-bottom: 15px; }
+        select, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #1e1e2f; color: #fff; font-size: 16px; box-sizing: border-box; margin-bottom: 10px; }
+        select { color: #00d2ff; border-color: #00d2ff; font-weight: bold; }
+        h2 { color: #00d2ff; margin-bottom: 10px; font-size: 20px; }
+        .input-group { text-align: initial; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; color: #aaa; }
+        button { width: 100%; padding: 12px; background: #00d2ff; border: none; border-radius: 6px; color: #000; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .result { margin-top: 20px; padding: 12px; background: #1e1e2f; border-radius: 6px; border-inline-start: 4px solid #00d2ff; text-align: initial; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="lang-picker">
+        <select id="langSelect" onchange="changeLanguage(this.value)">
+            <option value="en" selected>English 🇬🇧</option>
+            <option value="ar">العربية 🇩🇿</option>
+            <option value="fr">Français 🇫🇷</option>
+        </select>
+    </div>
+    <h2 id="title">⚡ Ohm's Law & Power Calculator</h2>
+    <p style="font-size:12px; color:#888;" id="subtitle">Enter at least two values to calculate the rest:</p>
+    <div class="input-group"><label id="lbl_v">Voltage (Volt - V):</label><input type="number" id="voltage"></div>
+    <div class="input-group"><label id="lbl_i">Current (Ampere - I):</label><input type="number" id="current"></div>
+    <div class="input-group"><label id="lbl_r">Resistance (Ohm - R):</label><input type="number" id="resistance"></div>
+    <div class="input-group"><label id="lbl_p">Power (Watt - P):</label><input type="number" id="power"></div>
+    <button onclick="calculateOhm()" id="btn_calc">Calculate Results</button>
+    <div class="result" id="output">...</div>
+</div>
+<script>
+const translations = {
+    ar: { dir: "rtl", title: "⚡ حاسبة قانون أوم والقدرة", subtitle: "أدخل قيمتين على الأقل لحساب باقي القيم:", v: "الجهد (Volt - V):", i: "التيار (Ampere - I):", r: "المقاومة (Ohm - R):", p: "القدرة (Watt - P):", btn: "حساب النتائج", error: "<span style='color:red;'>يرجى إدخال قيمتين على الأقل!</span>", resHeader: "النتائج المحسوبة:" },
+    en: { dir: "ltr", title: "⚡ Ohm's Law & Power Calculator", subtitle: "Enter at least two values to calculate the rest:", v: "Voltage (Volt - V):", i: "Current (Ampere - I):", r: "Resistance (Ohm - R):", p: "Power (Watt - P):", btn: "Calculate Results", error: "<span style='color:red;'>Please enter at least two values!</span>", resHeader: "Calculated Results:" },
+    fr: { dir: "ltr", title: "⚡ Calculateur Loi d'Ohm & Puissance", subtitle: "Entrez au moins deux valeurs pour calculer le reste:", v: "Tension (Volt - V):", i: "Courant (Ampere - I):", r: "Résistance (Ohm - R):", p: "Puissance (Watt - P):", btn: "Calculer les Résultats", error: "<span style='color:red;'>Veuillez entrer au moins deux valeurs!</span>", resHeader: "Résultats Calculés:" }
+};
+let currentLang = 'en';
+function changeLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+    document.getElementById('htmlTag').dir = t.dir;
+    document.getElementById('title').innerText = t.title;
+    document.getElementById('subtitle').innerText = t.subtitle;
+    document.getElementById('lbl_v').innerText = t.v;
+    document.getElementById('lbl_i').innerText = t.i;
+    document.getElementById('lbl_r').innerText = t.r;
+    document.getElementById('lbl_p').innerText = t.p;
+    document.getElementById('btn_calc').innerText = t.btn;
+}
+function calculateOhm() {
+    let V = parseFloat(document.getElementById('voltage').value);
+    let I = parseFloat(document.getElementById('current').value);
+    let R = parseFloat(document.getElementById('resistance').value);
+    let P = parseFloat(document.getElementById('power').value);
+    const t = translations[currentLang];
+    if (!isNaN(V) && !isNaN(I)) { R = V / I; P = V * I; }
+    else if (!isNaN(V) && !isNaN(R)) { I = V / R; P = (V * V) / R; }
+    else if (!isNaN(I) && !isNaN(R)) { V = I * R; P = (I * I) * R; }
+    else if (!isNaN(P) && !isNaN(V)) { I = P / V; R = (V * V) / P; }
+    else if (!isNaN(P) && !isNaN(I)) { V = P / I; R = P / (I * I); }
+    else { document.getElementById('output').innerHTML = t.error; return; }
+    document.getElementById('output').innerHTML = `<strong>${t.resHeader}</strong><br>• V: ${V.toFixed(2)} V<br>• I: ${I.toFixed(2)} A<br>• R: ${R.toFixed(2)} Ω<br>• P: ${P.toFixed(2)} W`;
+}
+changeLanguage('en');
+</script>
+</body>
+</html>
