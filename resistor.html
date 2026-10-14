@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" id="htmlTag">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resistor Color Code Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #1e1e2f; color: #fff; padding: 20px; text-align: center; }
+        .card { background-color: #2d2d44; padding: 20px; border-radius: 12px; max-width: 400px; margin: auto; }
+        .lang-picker { text-align: left; margin-bottom: 15px; }
+        select, input { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #444; background: #1e1e2f; color: #fff; font-size: 16px; box-sizing: border-box; margin-bottom: 10px; }
+        select { color: #00d2ff; border-color: #00d2ff; font-weight: bold; }
+        h2 { color: #00d2ff; margin-bottom: 10px; font-size: 20px; }
+        .input-group { text-align: initial; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; color: #aaa; }
+        button { width: 100%; padding: 12px; background: #00d2ff; border: none; border-radius: 6px; color: #000; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .result { margin-top: 20px; padding: 12px; background: #1e1e2f; border-radius: 6px; border-inline-start: 4px solid #00d2ff; text-align: initial; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="lang-picker">
+        <select id="langSelect" onchange="changeLanguage(this.value)">
+            <option value="en" selected>English 🇬🇧</option>
+            <option value="ar">العربية 🇩🇿</option>
+            <option value="fr">Français 🇫🇷</option>
+        </select>
+    </div>
+
+    <h2 id="title">🎨 Resistor Color Code Calculator</h2>
+
+    <div class="input-group">
+        <label id="lbl_b1">1st Band (1st Digit):</label>
+        <select id="band1"></select>
+    </div>
+
+    <div class="input-group">
+        <label id="lbl_b2">2nd Band (2nd Digit):</label>
+        <select id="band2"></select>
+    </div>
+
+    <div class="input-group">
+        <label id="lbl_mult">Multiplier:</label>
+        <select id="multiplier"></select>
+    </div>
+
+    <div class="input-group">
+        <label id="lbl_tol">Tolerance:</label>
+        <select id="tolerance"></select>
+    </div>
+
+    <button onclick="calculateResistor()" id="btn_calc">Calculate Value</button>
+
+    <div class="result" id="output">Result will appear here...</div>
+</div>
+
+<script>
+//@ts-nocheck
+const colorData = {
+    bands: [
+        { val: "0", en: "Black (0)", ar: "أسود (0)", fr: "Noir (0)", bg: "#000", color: "#fff" },
+        { val: "1", en: "Brown (1)", ar: "بني (1)", fr: "Marron (1)", bg: "#8B4513", color: "#fff" },
+        { val: "2", en: "Red (2)", ar: "أحمر (2)", fr: "Rouge (2)", bg: "#ff0000", color: "#fff" },
+        { val: "3", en: "Orange (3)", ar: "برتقالي (3)", fr: "Orange (3)", bg: "#ffa500", color: "#000" },
+        { val: "4", en: "Yellow (4)", ar: "أصفر (4)", fr: "Jaune (4)", bg: "#ffff00", color: "#000" },
+        { val: "5", en: "Green (5)", ar: "أخضر (5)", fr: "Vert (5)", bg: "#008000", color: "#fff" },
+        { val: "6", en: "Blue (6)", ar: "أزرق (6)", fr: "Bleu (6)", bg: "#0000ff", color: "#fff" },
+        { val: "7", en: "Violet (7)", ar: "بنفسجي (7)", fr: "Violet (7)", bg: "#8a2be2", color: "#fff" },
+        { val: "8", en: "Grey (8)", ar: "رمادي (8)", fr: "Gris (8)", bg: "#808080", color: "#fff" },
+        { val: "9", en: "White (9)", ar: "أبيض (9)", fr: "Blanc (9)", bg: "#ffffff", color: "#000" }
+    ],
+    multipliers: [
+        { val: 1, en: "Black (×1 Ω)", ar: "أسود (×1 Ω)", fr: "Noir (×1 Ω)", bg: "#000", color: "#fff" },
+        { val: 10, en: "Brown (×10 Ω)", ar: "بني (×10 Ω)", fr: "Marron (×10 Ω)", bg: "#8B4513", color: "#fff" },
+        { val: 100, en: "Red (×100 Ω)", ar: "أحمر (×100 Ω)", fr: "Rouge (×100 Ω)", bg: "#ff0000", color: "#fff" },
+        { val: 1000, en: "Orange (×1k Ω)", ar: "برتقالي (×1k Ω)", fr: "Orange (×1k Ω)", bg: "#ffa500", color: "#000" },
+        { val: 10000, en: "Yellow (×10k Ω)", ar: "أصفر (×10k Ω)", fr: "Jaune (×10k Ω)", bg: "#ffff00", color: "#000" },
+        { val: 100000, en: "Green (×100k Ω)", ar: "أخضر (×100k Ω)", fr: "Vert (×100k Ω)", bg: "#008000", color: "#fff" },
+        { val: 1000000, en: "Blue (×1M Ω)", ar: "أزرق (×1M Ω)", fr: "Bleu (×1M Ω)", bg: "#0000ff", color: "#fff" },
+        { val: 0.1, en: "Gold (×0.1 Ω)", ar: "ذهبي (×0.1 Ω)", fr: "Or (×0.1 Ω)", bg: "#ffd700", color: "#000" },
+        { val: 0.01, en: "Silver (×0.01 Ω)", ar: "فضي (×0.01 Ω)", fr: "Argent (×0.01 Ω)", bg: "#c0c0c0", color: "#000" }
+    ],
+    tolerances: [
+        { val: "±1%", en: "Brown (±1%)", ar: "بني (±1%)", fr: "Marron (±1%)", bg: "#8B4513", color: "#fff" },
+        { val: "±2%", en: "Red (±2%)", ar: "أحمر (±2%)", fr: "Rouge (±2%)", bg: "#ff0000", color: "#fff" },
+        { val: "±5%", en: "Gold (±5%)", ar: "ذهبي (±5%)", fr: "Or (±5%)", bg: "#ffd700", color: "#000" },
+        { val: "±10%", en: "Silver (±10%)", ar: "فضي (±10%)", fr: "Argent (±10%)", bg: "#c0c0c0", color: "#000" }
+    ]
+};
+
+const translations = {
+    ar: { dir: "rtl", title: "🎨 حاسبة ألوان المقاومات (4 أشرطة)", b1: "الشريط الأول (الرقم الأول):", b2: "الشريط الثاني (الرقم الثاني):", mult: "معامل الضرب:", tol: "نسبة التفاوت (Tolerance):", btn: "حساب قيمة المقاومة", placeholder: "النتيجة ستظهر هنا...", resHeader: "قيمة المقاومة:" },
+    en: { dir: "ltr", title: "🎨 Resistor Color Code Calculator", b1: "1st Band (1st Digit):", b2: "2nd Band (2nd Digit):", mult: "Multiplier:", tol: "Tolerance:", btn: "Calculate Value", placeholder: "Result will appear here...", resHeader: "Resistor Value:" },
+    fr: { dir: "ltr", title: "🎨 Code Couleur des Résistances", b1: "1er Anneau (1er Chiffre):", b2: "2ème Anneau (2ème Chiffre):", mult: "Multiplicateur:", tol: "Tolérance:", btn: "Calculer la Valeur", placeholder: "Le résultat apparaîtra ici...", resHeader: "Valeur de la Résistance:" }
+};
+
+let currentLang = 'en';
+
+function populateOptions(lang) {
+    const b1 = document.getElementById('band1');
+    const b2 = document.getElementById('band2');
+    const mult = document.getElementById('multiplier');
+    const tol = document.getElementById('tolerance');
+
+    const selB1 = b1.value || "0";
+    const selB2 = b2.value || "0";
+    const selMult = mult.value || "1";
+    const selTol = tol.value || "±5%";
+
+    b1.innerHTML = colorData.bands.map(item => `<option value="${item.val}" style="background-color:${item.bg};color:${item.color}">${item[lang]}</option>`).join('');
+    b2.innerHTML = colorData.bands.map(item => `<option value="${item.val}" style="background-color:${item.bg};color:${item.color}">${item[lang]}</option>`).join('');
+    mult.innerHTML = colorData.multipliers.map(item => `<option value="${item.val}" style="background-color:${item.bg};color:${item.color}">${item[lang]}</option>`).join('');
+    tol.innerHTML = colorData.tolerances.map(item => `<option value="${item.val}" style="background-color:${item.bg};color:${item.color}">${item[lang]}</option>`).join('');
+
+    b1.value = selB1;
+    b2.value = selB2;
+    mult.value = selMult;
+    tol.value = selTol;
+}
+
+function changeLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+    document.getElementById('htmlTag').dir = t.dir;
+    document.getElementById('title').innerText = t.title;
+    document.getElementById('lbl_b1').innerText = t.b1;
+    document.getElementById('lbl_b2').innerText = t.b2;
+    document.getElementById('lbl_mult').innerText = t.mult;
+    document.getElementById('lbl_tol').innerText = t.tol;
+    document.getElementById('btn_calc').innerText = t.btn;
+    document.getElementById('output').innerText = t.placeholder;
+    populateOptions(lang);
+}
+
+function calculateResistor() {
+    let b1 = document.getElementById('band1').value;
+    let b2 = document.getElementById('band2').value;
+    let mult = parseFloat(document.getElementById('multiplier').value);
+    let tol = document.getElementById('tolerance').value;
+    const t = translations[currentLang];
+
+    let baseValue = parseInt(b1 + b2) * mult;
+    let formattedValue = baseValue;
+
+    if (baseValue >= 1000000) {
+        formattedValue = (baseValue / 1000000).toFixed(2) + " MΩ";
+    } else if (baseValue >= 1000) {
+        formattedValue = (baseValue / 1000).toFixed(2) + " kΩ";
+    } else {
+        formattedValue = baseValue.toFixed(2) + " Ω";
+    }
+
+    document.getElementById('output').innerHTML = `<strong>${t.resHeader}</strong><br><span style="font-size: 18px; color: #00d2ff;">${formattedValue} ${tol}</span>`;
+}
+
+changeLanguage('en');
+</script>
+
+</body>
+</html>
